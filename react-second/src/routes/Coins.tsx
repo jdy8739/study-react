@@ -7,6 +7,7 @@ import { useQuery } from "react-query";
 import { fetchInfo, fetchPrice } from "../api";
 import PriceChart from '../components/PriceChart';
 import InfoChart from '../components/InfoChart';
+import { Helmet } from "react-helmet";
 
 interface IParams {
     id: string
@@ -69,11 +70,12 @@ function Coins() {
 
     return (
         <>
+            <Helmet><title>{ id }</title></Helmet>
             <Title>{ state?.name ? state.name : isLoading ? 'loading...' : infoData?.id }</Title>
             <SubTitle>
                 <p>{ id }</p>
                 &ensp;
-                <CoinLogo src={`https://cryptoicon-api.vercel.app/api/icon/${ infoData?.symbol.toLocaleLowerCase() }`}/>
+                <CoinLogo src={`https://cryptoicon-api.vercel.app/api/icon/${ infoData?.symbol?.toLocaleLowerCase() }`}/>
             </SubTitle>
             {
                 isLoading ?
