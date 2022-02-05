@@ -15,18 +15,28 @@ const hourSelector = selector<number>({
         set(minuteState, Math.round(Number(newValue)) * 60);
     }
 });
+enum TodoState {
+    'TO_DO' = 'TO_DO',
+    'DONE' = 'DONE',
+    'DOING' = 'DOING'
+};
+
+interface ITodoElem {
+    todo: string,
+    id: number,
+};
 
 interface ITodoArr {
-    [key: string]: string[]
-}
+    [key: string]: ITodoElem[]
+};
 
 const arr = atom<ITodoArr>({
     key: 'arr',
     default: {
-        to_do: ['a', 'b', 'e'],
-        done: ['c', 'd'],
-        doing: ['f', 'g']
+        to_do: [{ todo: 'Hello', id: 2123213213 }],
+        done: [{ todo: 'Hi', id: 65464756858 }],
+        doing: [{ todo: 'Bye', id: 96876756832 }]
     }
 });
 
-export { minuteState, hourSelector, arr };
+export { minuteState, hourSelector, arr, ITodoElem };

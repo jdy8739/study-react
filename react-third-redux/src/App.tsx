@@ -5,8 +5,8 @@ import { store, ITodo } from './store';
 const ADD = 'ADD';
 const DEL = 'DEL';
 
-function App({ todoList }: { todoList: ITodo[] }) {
-  console.log(todoList);
+function App({ todoList, dispatch }: { todoList: ITodo[], dispatch: any }) {
+  console.log({ todoList, dispatch });
 
   const [ text, setText ] = useState('');
   const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -16,12 +16,12 @@ function App({ todoList }: { todoList: ITodo[] }) {
   const addTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if(text === '') return;
-    store.dispatch({ type: ADD, todo: text });
+    dispatch({ type: ADD, todo: text });
     setText('');
   };
 
   const delTodo = (id: number) => {
-    store.dispatch({ type: DEL, id: id });
+    dispatch({ type: DEL, id: id });
   };
 
   //const todoList = store.getState();
@@ -54,5 +54,10 @@ function mapStateToProps(state: ITodo[]) {
   console.log(state);
   return { todoList: state };
 }
+
+function mapStateToDispatch(dispatch: any) {
+  return { dispatch }
+}
+
 
 export default connect(mapStateToProps)(App);

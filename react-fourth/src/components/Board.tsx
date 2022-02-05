@@ -1,9 +1,18 @@
 import styled from "styled-components"
 import { Droppable } from "react-beautiful-dnd";
 import Todo from "./Todo";
+import { useForm } from 'react-hook-form';
+import { arr, ITodoElem } from '../atoms';
+import { useSetRecoilState } from "recoil";
 
-const BoardForm = styled.div`
-  background-color: #eee;
+interface IDrag {
+    draggingFromThisWith: boolean,
+    isDraggingOver: boolean
+}
+
+const BoardForm = styled.div<IDrag>`
+  transition: all 1s;
+  background-color: ${ props => props.isDraggingOver ? 'red' : props.draggingFromThisWith ? 'teal' : '#eee' };
   border-radius: inherit;
   margin: 8px;
   display: flex;
@@ -20,20 +29,54 @@ const Title = styled.h3`
     align-self: start;
 `;
 
+interface ITodo {
+    todo: string
+};
 
-function Board({ todo, droppableId }: { todo: string[], droppableId: string }) {
+
+function Board({ todo, droppableId }: { todo: ITodoElem[], droppableId: string }) {
+
+    const { register, setValue, handleSubmit } = useForm<ITodo>();
+    const setTodoArr = useSetRecoilState(arr);
+
+    const onValid = (e: ITodo) => {
+        const newValue = e.todo;
+        setTodoArr((oldTodos) => {
+            const newTodo = { todo: newValue, id: Date.now() };
+            return {
+                ...oldTodos,
+                [droppableId]: [ ...oldTodos[droppableId], newTodo ]
+            };
+        });
+        setValue('todo', '');
+    };
+
+
     return (
         <>  
             <Droppable droppableId={ droppableId }>
               {
-                (provided) =>
-                <BoardForm ref={ provided.innerRef } { ...provided.droppableProps }>
+                (provided, snapchat) =>
+                <BoardForm ref={ provided.innerRef } 
+                { ...provided.droppableProps } 
+                isDraggingOver={ snapchat.isDraggingOver }
+                draggingFromThisWith={ Boolean(snapchat.draggingFromThisWith) }
+                >
                     <Title>{ droppableId }</Title>
+                    <form onSubmit={handleSubmit(onValid)}>
+                        <input { ...register('todo', { 
+                            required: 'Input this todo!'
+                        }) } 
+                        type='text'
+                        placeholder={`input your ${ droppableId }.`}
+                        />
+                        <button>ADD</button>
+                    </form>
                     {
                         todo.map((item, i) => {
                             return (
                                 <>
-                                    <Todo item={ item } index={ i } todoId={droppableId} key={ i }/>
+                                    <Todo item={ item.todo } index={ i } todoId={ droppableId } key={ i }/>
                                 </>
                             )
                         })
