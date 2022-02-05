@@ -12,7 +12,7 @@ const Boards = styled.div`
   margin: auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  align-items: center;
+  align-items: start;
 `;
 
 
@@ -31,16 +31,26 @@ function App() {
   const [myArr, setArr] = useRecoilState(arr);
 
   const handleOnDragEnd = ({ destination, source }: any) => {
+    const from = source.index;
+    const to = destination.index;
+
     if(destination.droppableId === source.droppableId) {
-      const from = source.index;
-      const to = destination.index;
       
       setArr((oldBoard) => {
         const copied = [...oldBoard[source.droppableId]];
         const elem = copied[from];
         copied.splice(from, 1);
         copied.splice(to, 0, elem);
-        return { ...oldBoard, [source.droppableId]: copied };
+        return { ...oldBoard, [source.droppableId]: copied }; //변수를 키 값에 넣을 때 [ ] 안에 넣는다.
+      });
+    } else {
+      setArr((oldBoard) => {
+        const removed = [...oldBoard[source.droppableId]];
+        const added = [...oldBoard[destination.droppableId]];
+        const elem = removed[from];
+        removed.splice(from, 1);
+        added.splice(to, 0, elem);
+        return { ...oldBoard, [source.droppableId]: removed, [destination.droppableId]: added };
       });
     }
   };

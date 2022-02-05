@@ -3,7 +3,6 @@ import { Droppable } from "react-beautiful-dnd";
 import Todo from "./Todo";
 
 const BoardForm = styled.div`
-  height: 95%;
   background-color: #eee;
   border-radius: inherit;
   margin: 8px;
@@ -15,6 +14,13 @@ const BoardForm = styled.div`
   box-sizing: border-box;
 `;
 
+const Title = styled.h3`
+    width: 100%; 
+    text-align: center;
+    align-self: start;
+`;
+
+
 function Board({ todo, droppableId }: { todo: string[], droppableId: string }) {
     return (
         <>  
@@ -22,7 +28,7 @@ function Board({ todo, droppableId }: { todo: string[], droppableId: string }) {
               {
                 (provided) =>
                 <BoardForm ref={ provided.innerRef } { ...provided.droppableProps }>
-                    <h3>{ droppableId }</h3>
+                    <Title>{ droppableId }</Title>
                     {
                         todo.map((item, i) => {
                             return (
