@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { off } from "process";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -53,15 +54,18 @@ const Slider = styled.div`
 const Row = styled(motion.div)`
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+    gap: 5px;
     position: absolute;
     width: 100%;
     margin-top: -150px;
 `;
 
-const Box = styled(motion.div)`
+const Box = styled(motion.div)<{ bg?: string }>`
     background-color: red;
+    background-image: url(${ props => props.bg });
     height: 140px;
+    background-size: cover;
+    background-position: center center;
 `;
 
 const rowVariant = {
@@ -76,12 +80,25 @@ const rowVariant = {
     }
 };
 
+const offset = 6;
+
 function Home() {
     const { isLoading, data } = useQuery<IMovieList>(['movies', 'nowPlaying'], getMovies);
 
+    const [leaving, setLeaving] = useState(false);
+
     const [index, setIndex] = useState(0);
+
     const handleSetIndex = () => {
-        setIndex(index => index + 1);
+        if(leaving) return;
+        toggleLeaving();
+        if(data) {
+            setIndex(index => (data?.results.length - 1) / offset - 2 > index ? index + 1 : 0);
+        }
+    };
+
+    const toggleLeaving = () => {
+        setLeaving(leaving => !leaving);
     };
 
     return (
@@ -95,7 +112,7 @@ function Home() {
                         <Overview>{data?.results[0].overview}</Overview>
                     </Banner>
                     <Slider>
-                        <AnimatePresence>
+                        <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
                             <Row 
                             key={index}
                             variants={rowVariant}
@@ -108,9 +125,9 @@ function Home() {
                             }}
                             >
                                 {
-                                    [0, 1, 2, 3, 4, 5].map((a, i) => {
+                                    data?.results.slice(offset * index + 1, offset * index + offset + 1).map((a: IMovieData, i) => {
                                         return (
-                                            <Box  key={ i }>{ a }</Box>
+                                            <Box key={ i } bg={ getBg(a.backdrop_path) }>{ a.title }</Box>
                                         )
                                     })
                                 }
