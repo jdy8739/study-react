@@ -95,7 +95,9 @@ function Header() {
 
     return (
         <>
-            <HeaderForm animate={{ backgroundColor: !isHeaderBlack ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 1)' }}>
+            <HeaderForm 
+            animate={{ backgroundColor: !isHeaderBlack ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 1)' }}
+            >
                 <Nav>
                     <Col width={40}>
                         <Logo
