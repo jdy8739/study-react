@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { getBg, getMovies } from "../api";
@@ -44,18 +46,78 @@ interface IMovieList {
     total_results: number
 }
 
+const Slider = styled.div`
+    position: relative;
+`;
+
+const Row = styled(motion.div)`
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    position: absolute;
+    width: 100%;
+    margin-top: -150px;
+`;
+
+const Box = styled(motion.div)`
+    background-color: red;
+    height: 140px;
+`;
+
+const rowVariant = {
+    start: {
+        x: window.innerWidth + 10
+    },
+    end: {
+        x: 0,
+    },
+    exit: {
+        x: -window.innerWidth - 10
+    }
+};
+
 function Home() {
     const { isLoading, data } = useQuery<IMovieList>(['movies', 'nowPlaying'], getMovies);
-    console.log(data);
+
+    const [index, setIndex] = useState(0);
+    const handleSetIndex = () => {
+        setIndex(index => index + 1);
+    };
+
     return (
         <>
             {
                 isLoading ?
                 <h4>loading...</h4> :
-                <Banner bg={ getBg(data?.results[0].backdrop_path || '') }>
-                    <Title>{data?.results[0].title}</Title>
-                    <Overview>{data?.results[0].overview}</Overview>
-                </Banner>
+                <>
+                    <Banner bg={ getBg(data?.results[0].backdrop_path || '') } onClick={handleSetIndex}>
+                        <Title>{data?.results[0].title}</Title>
+                        <Overview>{data?.results[0].overview}</Overview>
+                    </Banner>
+                    <Slider>
+                        <AnimatePresence>
+                            <Row 
+                            key={index}
+                            variants={rowVariant}
+                            initial="start"
+                            animate="end"
+                            exit="exit"
+                            transition={{
+                                type: 'tween',
+                                duration: 1
+                            }}
+                            >
+                                {
+                                    [0, 1, 2, 3, 4, 5].map((a, i) => {
+                                        return (
+                                            <Box  key={ i }>{ a }</Box>
+                                        )
+                                    })
+                                }
+                            </Row>
+                        </AnimatePresence>
+                    </Slider>
+                </>
             }
         </>
     )
