@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { motion, useViewportScroll } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMatch } from "react-router-dom";
 import styled from "styled-components";
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-const HeaderForm = styled(motion.div)`
+const HeaderForm = styled(motion.form)`
     background-color: black;
     width: 100vw;
     height: 90px;
@@ -91,11 +91,25 @@ function Header() {
     scrollY.onChange(() => {
         if(scrollY.get() > 30) setIsHeaderBlack(false);
         else setIsHeaderBlack(true);
-    })
+    });
+
+    const navi = useNavigate();
+
+    const [keyword, setKeyword] = useState('');
+
+    const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
+        setKeyword(e.currentTarget.value);
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        navi(`/search?keyword=${ keyword }`);
+    };
 
     return (
         <>
             <HeaderForm 
+            onSubmit={handleSubmit}
             animate={{ backgroundColor: !isHeaderBlack ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 1)' }}
             >
                 <Nav>
@@ -143,6 +157,8 @@ function Header() {
                         <Input placeholder="Title, Peoples, Genres"
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: isShowBar ? 1 : 0 }}
+                        onChange={handleOnChange}
+                        value={keyword}
                         />
                         <div style={{ width: '70px' }}></div>
                     </Col>

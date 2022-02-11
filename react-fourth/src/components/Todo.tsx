@@ -17,7 +17,7 @@ function Todo({ index, item, todoId }: { index: number, item: string, todoId: st
     // console.log(index);
     return (
         <>
-            <Draggable draggableId={ todoId + '' + index } index={ index }>
+            <Draggable draggableId={ todoId + '' } index={ index } key={ todoId + '' }>
                 {
                 (provided, snapchat) => 
                 <Card
